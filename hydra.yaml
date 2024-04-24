@@ -1,0 +1,61 @@
+specVersion: 1.0.0
+name: subquery-nova-hydra
+version: 1.0.0
+runner:
+  node:
+    name: '@subql/node'
+    version: '*'
+  query:
+    name: '@subql/query'
+    version: v1.5.0
+description: Nova SubQuery project
+repository: https://github.com/nova-wallet/subquery-nova
+schema:
+  file: ./schema.graphql
+network:
+  chainId: '0xafdc188f45c71dacbaa0b62e16a91f726c7b8699a9748cdf715459de6b7f366d'
+  endpoint: wss://rpc.hydradx.cloud
+dataSources:
+  - name: main
+    kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleHistoryElement
+          kind: substrate/CallHandler
+        - handler: handleTransfer
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Transfer
+        - handler: handleAssetTransfer
+          kind: substrate/EventHandler
+          filter:
+            module: assets
+            method: Transferred
+        - handler: handleTokenTransfer
+          kind: substrate/EventHandler
+          filter:
+            module: tokens
+            method: Transfer
+        - handler: handleOmnipoolSwap
+          kind: substrate/EventHandler
+          filter:
+            module: omnipool
+            method: SellExecuted
+        - handler: handleOmnipoolSwap
+          kind: substrate/EventHandler
+          filter:
+            module: omnipool
+            method: BuyExecuted
+        - handler: handleHydraRouterSwap
+          kind: substrate/EventHandler
+          filter:
+            module: router
+            method: RouteExecuted
+        - handler: handleHydraRouterSwap
+          kind: substrate/EventHandler
+          filter:
+            module: router
+            method: Executed
